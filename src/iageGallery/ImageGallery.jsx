@@ -11,20 +11,27 @@ export default function ImageGallery({ imgName }) {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (page > 1) {
-      setLoading(true);
-      getImageFetch();
+    if (!imgName) {
       return;
     }
+    console.log("изменяем страницу", page);
+    setLoading(true);
+    getImageFetch();
   }, [page]);
 
   useEffect(() => {
-    if (imgName !== "") {
-      setImages(null);
-      setLoading(true);
-      setPage(1);
-      getImageFetch();
+    if (!imgName) {
+      return;
     }
+    console.log("изменяем имя", imgName);
+    if (images) {
+      setImages(null);
+      console.log("обнуляем фотографии", images);
+      setPage(1);
+      console.log("обнуляем страницу", page);
+    }
+    setLoading(true);
+    return getImageFetch();
   }, [imgName]);
 
   useEffect(() => {
@@ -38,6 +45,16 @@ export default function ImageGallery({ imgName }) {
     setPage((prev) => prev + 1);
   };
 
+  const paintPicturesMethod = ({ hits }) => {
+    if (images) {
+      return setImages((prevState) => [...prevState, ...hits]);
+    }
+    setImages(hits);
+    if (hits.length === 0) {
+      alert(`Images are over!`);
+    }
+  };
+
   const getImageFetch = () => {
     const apiKey = `24435694-017d2bab3470121913608c0c0`;
     fetch(
@@ -46,12 +63,7 @@ export default function ImageGallery({ imgName }) {
       if (response.ok) {
         return response
           .json()
-          .then(({ hits }) => {
-            images ? setImages((state) => [...state, hits]) : setImages(hits);
-            if (hits.length === 0) {
-              alert(`Images are over!`);
-            }
-          })
+          .then(paintPicturesMethod)
           .then(() => {
             window.scrollTo({
               top: document.documentElement.scrollHeight,
