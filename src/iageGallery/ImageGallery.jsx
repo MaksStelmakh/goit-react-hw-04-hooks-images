@@ -6,7 +6,7 @@ import LoadMore from "../loadMore/LoadMore";
 import { ImageList, Loader } from "./imageGallery.styled";
 
 export default function ImageGallery({ imgName }) {
-  const [images, setImages] = useState(null);
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
 
@@ -14,47 +14,41 @@ export default function ImageGallery({ imgName }) {
     if (!imgName) {
       return;
     }
-    console.log("изменяем страницу", page);
+    if (page > 1) {
+      setPage(1);
+      setImages([]);
+    }
     setLoading(true);
     getImageFetch();
-  }, [page]);
+  }, [imgName]);
 
   useEffect(() => {
     if (!imgName) {
       return;
     }
-    console.log("изменяем имя", imgName);
-    if (images) {
-      setImages(null);
-      console.log("обнуляем фотографии", images);
-      setPage(1);
-      console.log("обнуляем страницу", page);
+    if (page > 1) {
+      setLoading(true);
+      getImageFetch();
+      return;
     }
-    setLoading(true);
-    return getImageFetch();
-  }, [imgName]);
-
-  useEffect(() => {
-    if (images && images.length === 0) {
-      alert("There is no result for your reqest!");
-      setImages(null);
-    }
-  }, [images]);
+  }, [page]);
 
   const loadMoreMethod = () => {
     setPage((prev) => prev + 1);
   };
 
   const paintPicturesMethod = ({ hits }) => {
-    if (hits.length === 0) {
+    console.log(hits);
+    if (images.length === 0 && hits.length === 0) {
+      return alert("There is no result for your reqest!");
+    } else if (hits.length === 0) {
       return alert(`Images are over!`);
     }
-    if (images && page > 1) {
-      return setImages((prevState) => [...prevState, ...hits]);
+    if (images === []) {
+      return setImages(hits);
     }
-    setImages(hits);
+    setImages((prevState) => [...prevState, ...hits]);
   };
-
   const getImageFetch = () => {
     const apiKey = `24435694-017d2bab3470121913608c0c0`;
     fetch(
