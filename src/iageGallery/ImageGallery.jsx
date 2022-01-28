@@ -46,13 +46,13 @@ export default function ImageGallery({ imgName }) {
   };
 
   const paintPicturesMethod = ({ hits }) => {
-    if (images) {
+    if (hits.length === 0) {
+      return alert(`Images are over!`);
+    }
+    if (images && page > 1) {
       return setImages((prevState) => [...prevState, ...hits]);
     }
     setImages(hits);
-    if (hits.length === 0) {
-      alert(`Images are over!`);
-    }
   };
 
   const getImageFetch = () => {
