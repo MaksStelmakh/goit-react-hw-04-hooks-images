@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-export const Items = styled.li`
+export const Item = styled.li`
   z-index: 1;
   border-radius: 2px;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),

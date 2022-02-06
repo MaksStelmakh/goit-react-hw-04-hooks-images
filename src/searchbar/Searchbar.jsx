@@ -3,16 +3,14 @@ import { useState } from "react";
 import { ImSearch } from "react-icons/im";
 import { Searchbars, SearchForm } from "./Searchbar.styled";
 
-export default function Searchbar({ onSubmit }) {
+export default function Searchbar({ onSubmit, setPage, setPaintImages }) {
   const [images, setImages] = useState("");
 
   const handleNameCHange = (event) => {
     setImages(event.currentTarget.value.toLowerCase());
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
+  const handleSubmit = () => {
     if (images.trim() === "") {
       alert("Введите имя");
       return;
@@ -23,7 +21,14 @@ export default function Searchbar({ onSubmit }) {
 
   return (
     <Searchbars>
-      <SearchForm onSubmit={handleSubmit}>
+      <SearchForm
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleSubmit();
+          setPage(1);
+          setPaintImages([]);
+        }}
+      >
         <button type="submit" className="button">
           <ImSearch className="button-label" />
         </button>
@@ -44,4 +49,6 @@ export default function Searchbar({ onSubmit }) {
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired,
+  setPage: PropTypes.func.isRequired,
+  setPaintImages: PropTypes.func.isRequired,
 };

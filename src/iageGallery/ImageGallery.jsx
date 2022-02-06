@@ -4,41 +4,42 @@ import { TailSpin } from "react-loader-spinner";
 import ImageGalleryItem from "../imageGalleryItem/ImageGalleryItem";
 import LoadMore from "../loadMore/LoadMore";
 import { ImageList, Loader } from "./imageGallery.styled";
+import apiIMG from "../api/api";
 
-export default function ImageGallery({ imgName }) {
-  const [images, setImages] = useState([]);
+export default function ImageGallery({
+  imgName,
+  page,
+  setPage,
+  images,
+  setImages,
+}) {
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!imgName) {
       return;
-    }
-    if (page > 1) {
-      setPage(1);
-      setImages([]);
     }
     setLoading(true);
-    getImageFetch();
-  }, [imgName]);
-
-  useEffect(() => {
-    if (!imgName) {
-      return;
-    }
-    if (page > 1) {
-      setLoading(true);
-      getImageFetch();
-      return;
-    }
-  }, [page]);
+    apiIMG
+      .getImageFetch(imgName, page)
+      .then(paintPicturesMethod)
+      .then(() => {
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: "smooth",
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => setLoading(false));
+  }, [imgName, page]);
 
   const loadMoreMethod = () => {
     setPage((prev) => prev + 1);
   };
 
   const paintPicturesMethod = ({ hits }) => {
-    console.log(hits);
     if (images.length === 0 && hits.length === 0) {
       return alert("There is no result for your reqest!");
     } else if (hits.length === 0) {
@@ -49,26 +50,7 @@ export default function ImageGallery({ imgName }) {
     }
     setImages((prevState) => [...prevState, ...hits]);
   };
-  const getImageFetch = () => {
-    const apiKey = `24435694-017d2bab3470121913608c0c0`;
-    fetch(
-      `https://pixabay.com/api/?q=${imgName}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
-    ).then((response) => {
-      if (response.ok) {
-        return response
-          .json()
-          .then(paintPicturesMethod)
-          .then(() => {
-            window.scrollTo({
-              top: document.documentElement.scrollHeight,
-              behavior: "smooth",
-            });
-          })
-          .finally(() => setLoading(false));
-      }
-      return Promise.reject(new Error("Nothing found"));
-    });
-  };
+
   return (
     <>
       <Loader>
@@ -97,4 +79,8 @@ export default function ImageGallery({ imgName }) {
 
 ImageGallery.propTypes = {
   imgName: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+  setPage: PropTypes.func.isRequired,
+  images: PropTypes.array.isRequired,
+  setImages: PropTypes.func.isRequired,
 };

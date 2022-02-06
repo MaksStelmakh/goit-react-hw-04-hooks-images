@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import Modal from "../modal/Modal";
-import { Items } from "./ImageGalleryItem.styled";
+import { Item } from "./ImageGalleryItem.styled";
 
 export default function ImageGalleryItem({ bigPhoto, smallPhoto, tag }) {
   const [showModal, setShowModal] = useState(false);
@@ -11,10 +11,10 @@ export default function ImageGalleryItem({ bigPhoto, smallPhoto, tag }) {
   };
 
   return (
-    <Items>
+    <Item>
       <img onClick={toggleModal} src={smallPhoto} alt={tag} />
       {showModal && <Modal photo={bigPhoto} tag={tag} onClose={toggleModal} />}
-    </Items>
+    </Item>
   );
 }
 
